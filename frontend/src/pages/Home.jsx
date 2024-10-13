@@ -19,6 +19,7 @@ const Home = () => {
       setShowState('dashboard');
     }
   }, [location.search]);
+  
   const { user, logout } = useUser();
   
 

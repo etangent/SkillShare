@@ -6,6 +6,7 @@ import SignUp from './pages/SignUp';
 import CreateSkill from './pages/CreateSkill';
 import ProfilePage from './pages/ProfilePage';
 import Public from './pages/Public';
+import Mission from './pages/Mission'
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
       <Route path='/login' element={<Login />} />
       <Route path='/signup' element={<SignUp />} />
       <Route path='/home' element={<Home />} />
+      <Route path='/mission' element={<Mission />} />
       <Route path='/skills/create' element={<CreateSkill />} />
       <Route path='/users/:username' element={<ProfilePage />} />
     </Routes>
