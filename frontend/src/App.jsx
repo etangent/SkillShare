@@ -5,10 +5,12 @@ import Login from "./pages/Login";
 import SignUp from './pages/SignUp';
 import CreateSkill from './pages/CreateSkill';
 import ProfilePage from './pages/ProfilePage';
+import Public from './pages/Public';
 
 const App = () => {
   return (
     <Routes>
+      <Route path="/" element={<Public />} />
       <Route path='/login' element={<Login />} />
       <Route path='/signup' element={<SignUp />} />
       <Route path='/home' element={<Home />} />

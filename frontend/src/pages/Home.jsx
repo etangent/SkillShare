@@ -4,11 +4,23 @@ import MatchFinding from './MatchFinding';
 import { useUser } from '../components/UserContext';
 import useRedirect from '../hooks/RedirectToLogin';
 import { MdAdd } from 'react-icons/md';
-import { Link } from 'react-router-dom';
+import { Link,useLocation } from 'react-router-dom';
 
 const Home = () => {
+  const location = useLocation();
   const [showState, setShowState] = useState('dashboard');
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const view = params.get('view');
+    if (view === 'matchfinding') {
+      setShowState('matchfinding');
+    } else {
+      setShowState('dashboard');
+    }
+  }, [location.search]);
   const { user, logout } = useUser();
+  
 
   useRedirect();
 
@@ -18,9 +30,9 @@ const Home = () => {
       <header className='bg-white shadow-md'>
         <div className='container mx-auto px-4 py-4 flex items-center justify-between'>
           {/* Logo or App Name */}
-          <h1 className='text-2xl font-semibold text-primary'>
+          <Link to="/" className='text-2xl font-semibold text-primary'>
             SkillMatcher
-          </h1>
+          </Link>
 
           {/* Navigation */}
           <nav className='flex items-center space-x-6'>

@@ -3,6 +3,8 @@ import BackButton from "../components/BackButton";
 import { useUser } from '../components/UserContext';
 import { ThreeDots } from 'react-loading-icons';
 import useRedirect from '../hooks/RedirectToLogin';
+import { MdAdd } from 'react-icons/md';
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import axios from 'axios';
 
 const CreateSkill = () => {
@@ -40,15 +42,76 @@ const CreateSkill = () => {
     setLoading(false);
   };
 
+  const {logout } = useUser();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [showState, setShowState] = useState('none');
+
   return (
-    <div className='min-h-screen bg-background flex items-center justify-center p-4'>
+    <div className='min-h-screen bg-background flex flex-col'>
+      <header className='bg-white shadow-md'>
+        <div className='container mx-auto px-4 py-4 flex items-center justify-between'>
+          {/* Logo or App Name */}
+          <Link to="/" className='text-2xl font-semibold text-primary'>
+           SkillMatcher
+          </Link>
+
+          {/* Navigation */}
+          <nav className='flex items-center space-x-6'>
+            <Link to='/home?view=dashboard' // Redirect to Home with a query parameter for Dashboard
+            className={`text-lg font-medium ${
+            location.search === '?view=dashboard'
+              ? 'text-primary underline underline-offset-4'
+              : 'text-gray-600 hover:text-primary transition duration-200'
+            }`}
+            >
+            Dashboard
+            </Link>
+
+            <Link
+              to='/home?view=matchfinding' // Redirect to Home with a query parameter for Matchfinding
+              className={`text-lg font-medium ${
+              location.search === '?view=matchfinding'
+              ? 'text-primary underline underline-offset-4'
+              : 'text-gray-600 hover:text-primary transition duration-200'
+              }`}
+            >
+            Matchfinding
+            </Link>
+
+            <Link
+              to='../skills/create'
+              className={`text-lg font-medium ${location.pathname === '/mission' ? 'text-primary underline underline-offset-4' : 'hover:text-primary transition duration-200'}`}
+              aria-label='Create Skill'
+            >
+              <MdAdd size={28} />
+            </Link>
+
+            {/* User Info */}
+              <div className='flex items-center space-x-2'>
+                <span className='text-gray-800 font-medium'>
+                  {user ? user.username : ''}
+                </span>
+                
+                <button
+                  onClick={logout}
+                  className='bg-primary hover:bg-secondary text-white font-semibold py-1 px-3 rounded-md transition duration-200'
+                >
+                  Logout
+                </button>
+              </div>
+          </nav>
+        </div>
+      </header>
+  
+    <div className='flex-grow flex items-center justify-center '>
       {loading || !user ? (
         <div className='flex justify-center'>
           <ThreeDots fill="#7E60BF" />
         </div>
       ) : (
         <div className='w-full max-w-md bg-white rounded-lg shadow-md p-6'>
-          <BackButton />
+          <BackButton destination="/home" />
           <h2 className='text-2xl font-semibold text-gray-800 mb-6 text-center'>
             Create New Skill
           </h2>
@@ -113,6 +176,7 @@ const CreateSkill = () => {
         </div>
       )}
     </div>
+  </div>
   );
 };
 
