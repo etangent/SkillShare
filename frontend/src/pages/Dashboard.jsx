@@ -1,15 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { ThreeDots } from 'react-loading-icons';
-import { MdCheck, MdClose } from 'react-icons/md';
-import useRedirect from '../hooks/RedirectToLogin';
 import { useUser } from '../components/UserContext';
+import Modal from '../components/Modal';
+import { MdCheck, MdClose, MdChat, MdSend, MdHelp } from 'react-icons/md'
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [outgoing, setOutgoing] = useState([]);
-  const [incoming, setIncoming] = useState([]);
-  const [approved, setApproved] = useState([]);
+  const [currOutgoing, setCurrOutgoing] = useState([]);
+  const [showOutgoing, setShowOutgoing] = useState(false);
+  const [incoming, setIncoming] = useState([])
+  const [currIncoming, setCurrIncoming] = useState({})
+  const [showIncoming, setShowIncoming] = useState(false)
+  const [approved, setApproved] = useState([])
+  const [currApproved, setCurrApproved] = useState({});
+  const [showApproved, setShowApproved] = useState(false);
+  const [currChat, setCurrChat] = useState({});
+  const [showChat, setShowChat] = useState(false);
+  const [currMessage, setCurrMessage] = useState('');
   const { user } = useUser();
 
   async function fetchData() {
@@ -19,58 +28,207 @@ const Dashboard = () => {
 
     setLoading(true);
     try {
-      const fetchIncoming = async () => {
-        setLoading(true)
 
-        const responseIn = await axios.get("http://localhost:1155/matches/incoming", { withCredentials: true });
-        setIncoming(responseIn.data.incoming);
-        
-        const responseOut = await axios.get("http://localhost:1155/matches/outgoing", { withCredentials: true });
-        setOutgoing(responseOut.data.outgoing);
+      setLoading(true)
 
-        const responseApp = await axios.get("http://localhost:1155/matches/approved", { withCredentials: true });
-        setApproved(responseApp.data.approved);
+      const responseIn = await axios.get("http://localhost:1155/matches/incoming", { withCredentials: true });
+      setIncoming(responseIn.data.incoming);
 
-        const responseReject = await axios.get("http://localhost:1155/matches/rejected", { withCredentials: true });
-        responseReject.data.rejected.forEach((match) => {
-          alert(`${match.recipient.username} rejected your request`);
-        })
-      }
+      const responseOut = await axios.get("http://localhost:1155/matches/outgoing", { withCredentials: true });
+      setOutgoing(responseOut.data.outgoing);
+
+      const responseApp = await axios.get("http://localhost:1155/matches/approved", { withCredentials: true });
+      setApproved(responseApp.data.approved);
+
+      const responseReject = await axios.get("http://localhost:1155/matches/rejected", { withCredentials: true });
+      responseReject.data.rejected.forEach((match) => {
+        alert(`${match.recipient.user.username} rejected your request`);
+      })
+
     } catch (error) {
       console.log(error);
     }
     setLoading(false);
-    }
+  }
 
   useEffect(() => {
     fetchData();
   }, [user]);
 
-  const handleApprove = async (matchId) => {
-    try {
-      await axios.post(
-        'http://localhost:1155/matches/approve',
-        { matchId },
-        { withCredentials: true }
-      );
-      fetchData(); // Refresh data without reloading the page
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const renderRequest = useCallback(() => {
+    const render = () => (
+      <div>
+        <h1 className='font-semibold'>Offered Skill: {currIncoming.requester.title}</h1>
+        <h2>requester: {currIncoming.requester.user.username}</h2>
+        <p>focus: {currIncoming.requester.focus}</p>
+        <p>description: {currIncoming.requester.description}</p>
+        <p className='font-semibold'>Requested Skill: {currIncoming.recipient.title}</p>
+        <br />
+        <div className='flex justify-between'>
+          <MdCheck onClick={handleApprove} className='text-green-700 cursor-pointer'></MdCheck>
+          <MdClose onClick={handleReject} className='text-red-600 cursor-pointer'></MdClose>
+        </div>
+      </div>
 
-  const handleReject = async (matchId) => {
+    )
+
+    return (
+      <Modal render={render} onClose={() => setShowIncoming(false)} />
+    )
+  }, [currIncoming, showIncoming])
+
+  const renderOutgoing = useCallback(() => {
+    const render = () => (
+      <div>
+        <h1 className='font-semibold'>Offered Skill: {currOutgoing.requester.title}</h1>
+        <h2>recipient: {currOutgoing.recipient.user.username}</h2>
+        <p className='font-semibold'>Requested Skill: {currOutgoing.recipient.title}</p>
+        <p>focus: {currOutgoing.recipient.focus}</p>
+        <p>description: {currOutgoing.recipient.description}</p>
+        <br />
+      </div>
+
+    )
+
+    return (
+      <Modal render={render} onClose={() => setShowOutgoing(false)} />
+    )
+  }, [currOutgoing, showOutgoing])
+
+  const handleReject = async () => {
+    setLoading(true)
     try {
-      await axios.post(
-        'http://localhost:1155/matches/reject',
-        { matchId },
-        { withCredentials: true }
-      );
-      fetchData(); // Refresh data without reloading the page
+      await axios.post("http://localhost:1155/matches/reject", { matchId: currIncoming._id }, { withCredentials: true })
+      window.location.reload();
     } catch (error) {
       console.log(error);
+      alert("failure");
     }
-  };
+    setLoading(false)
+  }
+
+  const handleApprove = async () => {
+    setLoading(true)
+    try {
+      await axios.post("http://localhost:1155/matches/approve", { matchId: currIncoming._id }, { withCredentials: true })
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
+      alert("failure");
+    }
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    const fetchApproved = async () => {
+      setLoading(true)
+      const response = await axios.get('http://localhost:1155/matches/approved', { withCredentials: true });
+      setApproved(response.data.approved);
+      setLoading(false)
+    }
+
+    fetchApproved();
+  }, [])
+
+  const renderApproved = useCallback(() => {
+    const render = () => (
+      <div>
+        <h1 className='font-semibold'>Offered Skill: {currApproved.requester.title}</h1>
+        <h2>requester: {currApproved.requester.user.username}</h2>
+        <p>focus: {currApproved.requester.focus}</p>
+        <p>description: {currApproved.requester.description}</p>
+        <p className='font-semibold'>Requested Skill: {currApproved.recipient.title}</p>
+        <br />
+        <div className='flex justify-center items-center'>
+          <MdChat onClick={() => {
+            setShowApproved(false);
+            setShowIncoming(false);
+            setShowChat(true);
+          }} className='cursor-pointer' />
+        </div>
+      </div>
+
+    )
+
+    return (
+      <Modal render={render} onClose={() => setShowApproved(false)} />
+    )
+  }, [currApproved, setCurrApproved])
+
+  useEffect(() => {
+    if (!showChat) {
+      return;
+    }
+
+    const fetchChat = async () => {
+      setLoading(true)
+      const recieverId = currApproved.requester.user._id == user._id ? currApproved.recipient.user._id : currApproved.requester.user._id;
+      try {
+        const response = await axios.post("http://localhost:1155/chatting/confirm", { recieverId, matchId: currApproved._id }, { withCredentials: true })
+        setCurrChat(response.data.chat);
+      } catch (error) {
+        console.log(error);
+        alert('error');
+      }
+      setLoading(false)
+    }
+
+    fetchChat();
+  }, [showChat])
+
+  const renderChat = useCallback(() => {
+    if (Object.keys(currChat) == 0) {
+      return;
+    }
+
+    const render = () => (
+      <div>
+        {currChat.messages.map((message) => (
+          <div key={message._id} className={message.sender == user.username ? 'text-end' : 'text-start'}>
+            <div className='m-4'>
+              <h1 className='font-semibold'>{message.sender}</h1>
+              <p>{message.message}</p>
+            </div>
+          </div>
+        ))}
+        <div className='flex items-center justify-between'>
+          <input
+            type="text"
+            placeholder="Type your message here"
+            value={currMessage}
+            onChange={(e) => setCurrMessage(e.target.value)}
+            className="border-2 border-black rounded-md my-2 p-1 w-full"
+          />
+          <MdSend onClick={handleSend} className='text-2xl ml-2 cursor-pointer' />
+        </div>
+      </div>
+    )
+
+    return (
+      <Modal render={render} onClose={() => {
+        setShowChat(false);
+        setShowApproved(true);
+        setCurrMessage('');
+      }} />
+    )
+  }, [showChat, currChat, currMessage])
+
+  const handleSend = async () => {
+    if (!currMessage || !currChat) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await axios.post('http://localhost:1155/chatting/send', { message: currMessage, chatId: currChat._id }, { withCredentials: true });
+      setCurrChat(response.data.chat);
+      setCurrMessage('');
+    } catch (error) {
+      console.log(error);
+      alert('error');
+    }
+    setLoading(false);
+  }
 
   return (
     <div className='min-h-screen bg-background p-4'>
@@ -84,6 +242,11 @@ const Dashboard = () => {
             Dashboard
           </h1>
 
+          {showIncoming && renderRequest()}
+          {showOutgoing && renderOutgoing()}
+          {showApproved && renderApproved()}
+          {showChat && renderChat()}
+
           {/* Outgoing and Incoming Requests */}
           <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
             {/* Outgoing Requests */}
@@ -96,8 +259,8 @@ const Dashboard = () => {
                   <thead className='bg-primary text-white'>
                     <tr>
                       <th className='px-4 py-2 text-left'>#</th>
-                      <th className='px-4 py-2 text-left'>Appointment Time</th>
                       <th className='px-4 py-2 text-left'>Contact</th>
+                      <th className='px-4 py-2 text-left'>More Info</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -105,13 +268,12 @@ const Dashboard = () => {
                       outgoing.map((match, index) => (
                         <tr key={match._id} className='border-b'>
                           <td className='px-4 py-2'>{index + 1}</td>
-                          <td className='px-4 py-2'>
-                            {`${match.dateObj.toLocaleDateString()} at ${match.dateObj.toLocaleTimeString([], {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}`}
+                          <td className='px-4 py-2'>{match.recipient.user.username}</td>
+                          <td className='px-4 py-2 flex justify-center space-x-4'><MdHelp onClick={() => {
+                          setCurrOutgoing(match);
+                          setShowOutgoing(true);
+                        }} className='cursor-pointer'>More info</MdHelp>
                           </td>
-                          <td className='px-4 py-2'>{match.recipient.username}</td>
                         </tr>
                       ))
                     ) : (
@@ -136,9 +298,8 @@ const Dashboard = () => {
                   <thead className='bg-primary text-white'>
                     <tr>
                       <th className='px-4 py-2 text-left'>#</th>
-                      <th className='px-4 py-2 text-left'>Appointment Time</th>
                       <th className='px-4 py-2 text-left'>Contact</th>
-                      <th className='px-4 py-2 text-center'>Options</th>
+                      <th className='px-4 py-2 text-left'>More Info</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -146,28 +307,11 @@ const Dashboard = () => {
                       incoming.map((match, index) => (
                         <tr key={match._id} className='border-b'>
                           <td className='px-4 py-2'>{index + 1}</td>
-                          <td className='px-4 py-2'>
-                            {`${match.dateObj.toLocaleDateString()} at ${match.dateObj.toLocaleTimeString([], {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}`}
-                          </td>
-                          <td className='px-4 py-2'>{match.requester.username}</td>
-                          <td className='px-4 py-2 flex justify-center space-x-4'>
-                            <button
-                              className='text-green-500 hover:text-green-600 transition duration-200'
-                              onClick={() => handleApprove(match._id)}
-                              aria-label='Approve'
-                            >
-                              <MdCheck size={24} />
-                            </button>
-                            <button
-                              className='text-red-500 hover:text-red-600 transition duration-200'
-                              onClick={() => handleReject(match._id)}
-                              aria-label='Reject'
-                            >
-                              <MdClose size={24} />
-                            </button>
+                          <td className='px-4 py-2'>{match.requester.user.username}</td>
+                          <td className='px-4 py-2 flex justify-center space-x-4'><MdHelp onClick={() => {
+                          setCurrIncoming(match);
+                          setShowIncoming(true);
+                        }} className='cursor-pointer'>More info</MdHelp>
                           </td>
                         </tr>
                       ))
@@ -194,8 +338,8 @@ const Dashboard = () => {
                 <thead className='bg-primary text-white'>
                   <tr>
                     <th className='px-4 py-2 text-left'>#</th>
-                    <th className='px-4 py-2 text-left'>Appointment Time</th>
                     <th className='px-4 py-2 text-left'>Contact</th>
+                    <th className='px-4 py-2 text-left'>More Info</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -204,16 +348,15 @@ const Dashboard = () => {
                       <tr key={match._id} className='border-b'>
                         <td className='px-4 py-2'>{index + 1}</td>
                         <td className='px-4 py-2'>
-                          {`${match.dateObj.toLocaleDateString()} at ${match.dateObj.toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}`}
-                        </td>
-                        <td className='px-4 py-2'>
                           {user._id === match.recipient._id
-                            ? match.requester.username
-                            : match.recipient.username}
+                            ? match.requester.user.username
+                            : match.recipient.user.username}
                         </td>
+                        <td className='px-4 py-2 flex justify-center space-x-4'><MdHelp onClick={() => {
+                          setCurrApproved(match);
+                          setShowApproved(true);
+                        }} className='cursor-pointer'>More info</MdHelp>
+                          </td>
                       </tr>
                     ))
                   ) : (

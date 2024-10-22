@@ -20,7 +20,7 @@ const ProfilePage = () => {
             try {
                 await axios.get(`http://localhost:1155/users/${username}`);
                 setIsReal(true);
-                const response = await axios.get(`http://localhost:1155/skills/${username}`);
+                const response = await axios.get(`http://localhost:1155/skills/byUsername/${username}`);
                 setSkills(response.data.skills);
             } catch (error) {
                 if (error.status != 404) {
