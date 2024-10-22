@@ -195,8 +195,12 @@ router.get("/rejected", isAuthenticated, async (request, response) => {
             });
 
         const rejected = matches.filter((match) => {
-            return match.requester.user._id.equals(userId)
+            return match.requester.user._id.toString() == userId;
         })
+
+        await Promise.all(rejected.map((rejection) => {
+            return Match.findByIdAndDelete(rejection._id); // Handle async deletion
+        }));
 
         return response.status(200).send({ rejected });
     } catch (error) {
