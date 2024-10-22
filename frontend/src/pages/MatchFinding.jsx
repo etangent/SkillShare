@@ -6,14 +6,14 @@ import Dropdown from '../components/Dropdown';
 
 const MatchFinding = () => {
     const [loading, setLoading] = useState(false);
-    const [currSkillIndex, setCurrSkillIndex] = useState(0);
-    const [skillsHistory, setSkillsHistory] = useState([]);
+    const [currMatch, setCurrMatch] = useState({});
     const [showModal, setShowModal] = useState(false);
     const [skills, setSkills] = useState([]);
     const [mySkill, setMySkill] = useState("");
 
     const handleRequest = async () => {
-        if (!skillsHistory[currSkillIndex]) {
+        if (!currMatch.user) {
+            console.log(currMatch);
             return;
         }
 
@@ -21,7 +21,7 @@ const MatchFinding = () => {
         try {
             await axios.post("http://localhost:1155/matches/request", {
                 requesterId: mySkill,
-                recipientId: skillsHistory[currSkillIndex]._id,
+                recipientId: currMatch._id,
             }, { withCredentials: true });
             setShowModal(false);
         } catch (error) {
@@ -35,26 +35,11 @@ const MatchFinding = () => {
         try {
             const response = await axios.get("http://localhost:1155/skills/search", { withCredentials: true });
 
-            setSkillsHistory((prev) => [...prev, response.data.skill]);
-            setCurrSkillIndex(skillsHistory.length); // Move to the latest skill
+            setCurrMatch(response.data.skill);
         } catch (error) {
             console.log(error);
         }
         setLoading(false);
-    };
-
-    const goToPreviousSkill = () => {
-        if (currSkillIndex > 0) {
-            setCurrSkillIndex(currSkillIndex - 1);
-        }
-    };
-
-    const goToNextSkill = () => {
-        if (currSkillIndex < skillsHistory.length - 1) {
-            setCurrSkillIndex(currSkillIndex + 1);
-        } else {
-            findMatch(); // Fetch a new skill if at the end of history
-        }
     };
 
     useEffect(() => {
@@ -99,39 +84,50 @@ const MatchFinding = () => {
             )} onClose={() => setShowModal(false)} />
         );
     }, [skills, mySkill]);
-
-    return (
-        <div>
-            {loading ? (
-                <div className='flex justify-center my-20'>
-                    <ThreeDots />
+    
+      useEffect(() => {
+        findMatch();
+      }, []);
+    
+      return (
+        <div className='min-h-screen bg-background flex items-center justify-center p-4'>
+          {loading ? (
+            <div className='flex justify-center'>
+              <ThreeDots fill='#7E60BF' />
+            </div>
+          ) : (
+            <div className='w-full max-w-md bg-white rounded-lg shadow-md p-6 text-center'>
+              {showModal && renderModal()}
+              {currMatch.user ? (
+                <div>
+                    <h1 className='text-4xl font-bold mb-3'>User: {currMatch.user.username}</h1>
+                    <h2 className='text-3xl font-semibold mb-3'>Skill: {currMatch.title}</h2>
+                    <p className='text-2xl mb-3'>Focus: {currMatch.focus}</p>
+                    <p className='text-2xl mb-3'>Description: {currMatch.description}</p>
                 </div>
-            ) : (
-                <div className='flex flex-col items-center'>
-                    <div className='flex flex-col items-center border-2 border-sky-400 rounded-xl p-8 px-8 mx-auto'>
-                        {skillsHistory.length === 0 || currSkillIndex < 0 ? (
-                            <div className='flex justify-center my-20'>
-                                <ThreeDots />
-                            </div>
-                        ) : (
-                            <div className='p-3'>
-                                <p className='text-3xl mb-5'>{skillsHistory[currSkillIndex]?.user?.username}</p>
-                                <p className='text-3xl mb-5'>{skillsHistory[currSkillIndex]?.title}</p>
-                                <p className='text-2xl mb-5'>{skillsHistory[currSkillIndex]?.focus}</p>
-                                <p className='text-xl mb-5'>{skillsHistory[currSkillIndex]?.description}</p>
-                            </div>
-                        )}
-                        <div className='flex space-x-5'>
-                            <button className='text-2xl border-2 border-gray-600 rounded-md p-1' onClick={goToPreviousSkill}>Previous Skill</button>
-                            <button className='text-2xl border-2 border-gray-600 rounded-md p-1' onClick={goToNextSkill}>Next Skill</button>
-                        </div>
-                    </div>
-                    <button className='border-2 border-gray-600 rounded-md p-4 mt-5' onClick={() => setShowModal(true)}>Send Request</button>
-                    {showModal && renderModal()}
-                </div>
-            )}
+              ) : (
+                <p>Find a Match</p>
+              )}
+              <div className='space-y-4'>
+                <button
+                  onClick={() => {
+                    findMatch();
+                  }}
+                  className='w-full bg-primary hover:bg-secondary text-white font-semibold py-2 rounded-md transition duration-200'
+                >
+                  Search for Match
+                </button>
+                <button
+                  onClick={() => {setShowModal(true)}}
+                  className='w-full bg-primary hover:bg-secondary text-white font-semibold py-2 rounded-md transition duration-200'
+                >
+                  Send Request
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-    );
+      );
 };
 
 export default MatchFinding;
