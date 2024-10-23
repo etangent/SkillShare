@@ -90,7 +90,7 @@ const MatchFinding = () => {
       }, []);
     
       return (
-        <div className='min-h-screen bg-background flex items-center justify-center p-4'>
+        <div className='flex-grow bg-background flex items-center justify-center p-4'>
           {loading ? (
             <div className='flex justify-center'>
               <ThreeDots fill='#7E60BF' />
