@@ -100,7 +100,7 @@ const location = useLocation();
         </div>
       ) : (
         <div className='w-full max-w-md bg-white rounded-lg shadow-md p-6'>
-          <BackButton />
+          <BackButton destination="/login" />
           <h2 className='text-2xl font-semibold text-gray-800 mb-6 text-center'>
             Sign Up
           </h2>
