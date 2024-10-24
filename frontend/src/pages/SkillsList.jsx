@@ -9,6 +9,7 @@ import useRedirect from '../hooks/RedirectToLogin';
 const SkillsList = () => {
     const [loading, setLoading] = useState(false);
     const [skills, setSkills] = useState([]);
+    const [showModal, setShowModal] = useState(false);
     const [filteredSkills, setFilteredSkills] = useState([]);
     const [skillType, setSkillType] = useState('All');
     const { user, logout } = useUser (); // Get user info and logout function
@@ -17,7 +18,7 @@ const SkillsList = () => {
     const focusOptions = ["Tech", "Art", "Wellness", "Sports"];
 
     useRedirect(); // Redirect to login if not authenticated
-
+    
     const fetchSkills = async () => {
         setLoading(true);
         try {
@@ -55,7 +56,7 @@ const SkillsList = () => {
                 <div className='container mx-auto px-4 py-4 flex items-center justify-between'>
                     {/* Logo or App Name */}
                     <Link to="/" className='text-2xl font-semibold text-primary'>
-                        Syncora
+                    Syncora
                     </Link>
 
                     {/* Navigation */}
@@ -81,7 +82,7 @@ const SkillsList = () => {
                         </Link>
 
                         <Link to="/skills" 
-                        className={`text-lg font-medium ${location.pathname === '/skills' ? 'text-primary underline underline-offset-4' : 'hover:text-primary transition duration-200'}`}
+                        className={`text-lg font-medium ${location.pathname === '/skills' ? 'text-primary underline underline-offset-4' : 'text-gray-600 hover:text-primary transition duration-200'}`}
                         >
                         Skills
                         </Link>
@@ -90,7 +91,7 @@ const SkillsList = () => {
                             to='../skills/create'
                             className={`text-lg font-medium ${location.pathname === '/mission' ? 'text-primary underline underline-offset-4' : 'hover:text-primary transition duration-200'}`}
                             aria-label='Create Skill'
-                        >
+                            >
                             <MdAdd size={28} />
                         </Link>
 
@@ -143,6 +144,12 @@ const SkillsList = () => {
                                         <h2 className='text-xl font-semibold'>{skill.title}</h2>
                                         <p className='text-gray-600'>{skill.description}</p>
                                         <p className='text-gray-500'>Focus: {skill.focus}</p> {/* Display focus */}
+                                        <button
+                                            onClick={() => {setShowModal(true)}}
+                                            className='w-full bg-primary hover:bg-secondary text-white font-semibold py-2 rounded-md transition duration-200'
+                                            >
+                                            Send Request
+                                        </button>
                                     </div>
                                 ))
                             ) : (

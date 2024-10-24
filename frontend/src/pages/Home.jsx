@@ -32,7 +32,7 @@ const Home = () => {
         <div className='container mx-auto px-4 py-4 flex items-center justify-between'>
           {/* Logo or App Name */}
           <Link to="/" className='text-2xl font-semibold text-primary'>
-            Syncora
+          Syncora
           </Link>
 
           {/* Navigation */}
@@ -61,7 +61,7 @@ const Home = () => {
             {/* Create Buttons */}
 
             <Link to="/skills" 
-                        className={`text-lg font-medium ${location.pathname === '/skills' ? 'text-primary underline underline-offset-4' : 'hover:text-primary transition duration-200'}`}
+                        className={`text-lg font-medium ${location.pathname === '/skills' ? 'text-primary underline underline-offset-4' : 'text-gray-600 text-gray-600hover:text-primary transition duration-200'}`}
                         >
                         Skills
                         </Link>
