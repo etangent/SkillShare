@@ -151,7 +151,7 @@ const CreateSkill = () => {
                   Select focus area
                 </option>
                 {focusOptions.map((option) => (
-                  <option key={option} value={option.toLowerCase()}>
+                  <option key={option} value={option}>
                     {option}
                   </option>
                 ))}
