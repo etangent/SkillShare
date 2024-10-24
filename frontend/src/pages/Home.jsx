@@ -59,6 +59,12 @@ const Home = () => {
             </button>
 
             {/* Create Buttons */}
+
+            <Link to="/skills" 
+                        className={`text-lg font-medium ${location.pathname === '/skills' ? 'text-primary underline underline-offset-4' : 'hover:text-primary transition duration-200'}`}
+                        >
+                        Skills
+                        </Link>
         
             <Link
               to='../skills/create'
