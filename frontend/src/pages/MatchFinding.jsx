@@ -72,14 +72,20 @@ const MatchFinding = () => {
 
         return (
             <Modal render={() => (
-                <div>
-                    <Dropdown
-                        value={mySkill}
-                        onChange={(value) => setMySkill(value)}
-                        renderOptions={renderOptions}
-                        className="flex flex-col w-24"
-                    />
-                    <button className='my-3' onClick={handleRequest}>Confirm</button>
+                <div className="flex flex-col p-6">
+                <p className="text-xl font-semibold mb-4">Send Request</p>
+                <Dropdown
+                    value={mySkill}
+                    onChange={(value) => setMySkill(value)}
+                    renderOptions={renderOptions}
+                    className="flex flex-col mb-4"
+                />
+                <button
+                    className='w-full bg-primary hover:bg-secondary text-white font-semibold py-2 rounded-md transition duration-200'
+                    onClick={() => handleRequest}
+                >
+                    Confirm Request
+                </button>
                 </div>
             )} onClose={() => setShowModal(false)} />
         );
@@ -96,34 +102,36 @@ const MatchFinding = () => {
               <ThreeDots fill='#7E60BF' />
             </div>
           ) : (
-            <div className='w-full max-w-md bg-white rounded-lg shadow-md p-6 text-center'>
-              {showModal && renderModal()}
-              {currMatch.user ? (
-                <div>
-                    <h1 className='text-4xl font-bold mb-3'>User: {currMatch.user.username}</h1>
-                    <h2 className='text-3xl font-semibold mb-3'>Skill: {currMatch.title}</h2>
-                    <p className='text-2xl mb-3'>Focus: {currMatch.focus}</p>
-                    <p className='text-2xl mb-3'>Description: {currMatch.description}</p>
+            <div>
+                {showModal && renderModal()}
+                <div className='w-full max-w-md bg-white rounded-lg shadow-md p-6 text-center'>
+                {currMatch.user ? (
+                    <div>
+                        <h1 className='text-4xl font-bold mb-3'>User: {currMatch.user.username}</h1>
+                        <h2 className='text-3xl font-semibold mb-3'>Skill: {currMatch.title}</h2>
+                        <p className='text-2xl mb-3'>Focus: {currMatch.focus}</p>
+                        <p className='text-2xl mb-3'>Description: {currMatch.description}</p>
+                    </div>
+                ) : (
+                    <p>Find a Match</p>
+                )}
+                <div className='space-y-4'>
+                    <button
+                    onClick={() => {
+                        findMatch();
+                    }}
+                    className='w-full bg-primary hover:bg-secondary text-white font-semibold py-2 rounded-md transition duration-200'
+                    >
+                    Search for Match
+                    </button>
+                    <button
+                    onClick={() => {setShowModal(true)}}
+                    className='w-full bg-primary hover:bg-secondary text-white font-semibold py-2 rounded-md transition duration-200'
+                    >
+                    Send Request
+                    </button>
                 </div>
-              ) : (
-                <p>Find a Match</p>
-              )}
-              <div className='space-y-4'>
-                <button
-                  onClick={() => {
-                    findMatch();
-                  }}
-                  className='w-full bg-primary hover:bg-secondary text-white font-semibold py-2 rounded-md transition duration-200'
-                >
-                  Search for Match
-                </button>
-                <button
-                  onClick={() => {setShowModal(true)}}
-                  className='w-full bg-primary hover:bg-secondary text-white font-semibold py-2 rounded-md transition duration-200'
-                >
-                  Send Request
-                </button>
-              </div>
+                </div>
             </div>
           )}
         </div>
