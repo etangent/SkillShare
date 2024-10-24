@@ -55,7 +55,7 @@ const SkillsList = () => {
                 <div className='container mx-auto px-4 py-4 flex items-center justify-between'>
                     {/* Logo or App Name */}
                     <Link to="/" className='text-2xl font-semibold text-primary'>
-                        SkillMaster
+                        Syncora
                     </Link>
 
                     {/* Navigation */}

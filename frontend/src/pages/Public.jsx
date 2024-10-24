@@ -11,7 +11,7 @@ const Public = () => {
         <div className='container mx-auto px-4 py-4 flex items-center justify-between'>
           {/* Logo or App Name */}
           <Link to="/" className='text-2xl font-semibold text-primary'>
-            SkillMaster
+            Syncora
           </Link>
 
           <nav className='flex items-center space-x-6'>
@@ -37,9 +37,9 @@ const Public = () => {
       </header>
 
       <main className='container mx-auto mt-8 p-8 bg-white shadow-md rounded-lg'>
-        <h1 className='text-5xl font-bold text-gray-800 mb-6 text-center'>Welcome to SkillMaster!</h1>
+        <h1 className='text-5xl font-bold text-gray-800 mb-6 text-center'>Welcome to Syncora!</h1>
         <p className='text-lg text-gray-700 mb-6 text-center'>
-          Unlock your potential and connect with a vibrant community eager to learn and share skills. Whether you're a seasoned expert or a curious beginner, SkillMaster is your gateway to endless possibilities.
+          Unlock your potential and connect with a vibrant community eager to learn and share skills. Whether you're a seasoned expert or a curious beginner, Syncora is your gateway to endless possibilities.
         </p>
         
         <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>

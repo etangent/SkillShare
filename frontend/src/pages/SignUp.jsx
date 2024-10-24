@@ -64,7 +64,7 @@ const location = useLocation();
       <div className='container mx-auto px-4 py-4 flex items-center justify-between'>
         
           <Link to="/" className='text-2xl font-semibold text-primary'>
-            SkillMaster
+            Syncora
           </Link>
 
         <nav className='flex items-center space-x-6'>
