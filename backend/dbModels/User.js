@@ -91,10 +91,10 @@ userSchema.methods.selectFocusWeighted = function() {
 
 userSchema.methods.updateLiked = function(focus) {
     const factors = {
-        tech: { increase: "tech", decrease: ["art", "wellness", "sports"] },
-        art: { increase: "art", decrease: ["tech", "wellness", "sports"] },
-        wellness: { increase: "wellness", decrease: ["tech", "art", "sports"] },
-        sports: { increase: "sports", decrease: ["tech", "art", "wellness"] }
+        Tech: { increase: "Tech", decrease: ["Art", "Wellness", "Sports"] },
+        Art: { increase: "Art", decrease: ["Tech", "Wellness", "Sports"] },
+        Wellness: { increase: "Wellness", decrease: ["Tech", "Art", "Sports"] },
+        Sports: { increase: "Sports", decrease: ["Tech", "Art", "Wellness"] }
     };
 
     if (factors[focus]) {
@@ -109,10 +109,10 @@ userSchema.methods.updateLiked = function(focus) {
 
 userSchema.methods.updateDisliked = function(focus) {
     const factors = {
-        tech: { decrease: "tech", increase: ["art", "wellness", "sports"] },
-        art: { decrease: "art", increase: ["tech", "wellness", "sports"] },
-        wellness: { decrease: "wellness", increase: ["tech", "art", "sports"] },
-        sports: { decrease: "sports", increase: ["tech", "art", "wellness"] }
+        Tech: { decrease: "Tech", increase: ["Art", "Wellness", "Sports"] },
+        Art: { decrease: "Art", increase: ["Tech", "Wellness", "Sports"] },
+        Wellness: { decrease: "Wellness", increase: ["Tech", "Art", "Sports"] },
+        Sports: { decrease: "Sports", increase: ["Tech", "Art", "Wellness"] }
     };
 
     if (factors[focus]) {

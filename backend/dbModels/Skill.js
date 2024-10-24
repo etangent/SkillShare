@@ -19,7 +19,7 @@ const skillSchema = mongoose.Schema(
         },
         focus: {
             type: String,
-            enum: ["tech", "art", "wellness", "sports"],
+            enum: ["Tech", "Art", "Wellness", "Sports"],
             required: true,
         }
     }
