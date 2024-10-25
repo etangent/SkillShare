@@ -194,7 +194,7 @@ const SkillsList = () => {
                         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
                             {filteredSkills.length > 0 ? (
                                 filteredSkills.map(skill => (
-                                    <div key={skill._id} className='border p-4 rounded-lg shadow-md'>
+                                    <div key={skill._id} className='bg-white border p-4 rounded-lg shadow-md'>
                                         <h2 className='text-xl font-semibold'>{skill.title}</h2>
                                         <p className='text-gray-600'>{skill.description}</p>
                                         <p className='text-gray-500'>Focus: {skill.focus}</p>
