@@ -11,9 +11,11 @@ import Dropdown from '../components/Dropdown';
 const SkillsList = () => {
     const [loading, setLoading] = useState(false);
     const [skills, setSkills] = useState([]);
+    const [mySkills, setMySkills] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [filteredSkills, setFilteredSkills] = useState([]);
     const [skillType, setSkillType] = useState('All');
+    const [selectedSkill, setSelectedSkill] = useState("");
     const [mySkill, setMySkill] = useState("");
     const { user, logout } = useUser ();
     const location = useLocation();
@@ -39,6 +41,16 @@ const SkillsList = () => {
     }, []);
 
     useEffect(() => {
+        setLoading(true);
+        axios.get('http://localhost:1155/skills/mySkills', { withCredentials: true })
+            .then(response => {
+                setMySkills(response.data.skills);
+            })
+            .catch(error => console.log(error))
+            .finally(() => setLoading(false));
+      }, []);
+
+    useEffect(() => {
         if (skillType === 'All') {
             setFilteredSkills(skills);
         } else {
@@ -59,9 +71,10 @@ const SkillsList = () => {
         }
 
         setLoading(true);
+        console.log(mySkill);
         try {
             await axios.post("http://localhost:1155/matches/request", {
-                requesterId: user._id,
+                requesterId: mySkill,
                 recipientId: recipientId,
             }, { withCredentials: true });
             alert("Request sent successfully!");
@@ -82,19 +95,35 @@ const SkillsList = () => {
             </>
         );
 
+        const renderMyOptions = () => (
+            <>
+                {mySkills.map(skill => (
+                    <option key={skill._id} value={skill._id}>{skill.title}</option>
+                ))}
+            </>
+        );
+
         return (
             <Modal render={() => (
                 <div className="p-6">
                     <h2 className="text-xl font-semibold mb-4">Send Request</h2>
+                    <h2 className='font-semibold'>Chosen Skill</h2>
                     <Dropdown
-                        value={mySkill}
-                        onChange={(value) => setMySkill(value)}
+                        value={selectedSkill}
+                        onChange={(value) => setSelectedSkill(value)}
                         renderOptions={renderOptions}
                         className="flex flex-col mb-4"
                     />
+                    <h2 className='font-semibold'>Offered Skill</h2>
+                    <Dropdown
+                    value={mySkill}
+                    onChange={(value) => setMySkill(value)}
+                    renderOptions={renderMyOptions}
+                    className="flex flex-col mb-4"
+                    />
                     <button
                         className='w-full bg-primary hover:bg-secondary text-white font-semibold py-2 rounded-md transition duration-200'
-                        onClick={() => handleRequest(mySkill)}
+                        onClick={() => handleRequest(selectedSkill)}
                     >
                         Confirm Request
                     </button>
@@ -171,7 +200,7 @@ const SkillsList = () => {
                                         <p className='text-gray-500'>Focus: {skill.focus}</p>
                                         <button
                                             onClick={() => {
-                                                setMySkill(skill._id);
+                                                setSelectedSkill(skill._id);
                                                 setShowModal(true);
                                             }}
                                             className='w-full bg-primary hover:bg-secondary text-white font-semibold py-2 rounded-md transition duration-200'
